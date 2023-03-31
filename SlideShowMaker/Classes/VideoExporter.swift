@@ -83,15 +83,15 @@ extension VideoExporter {
     
     /// Add video and audio composition track
     fileprivate func addTrack(item: VideoItem, composition: AVMutableComposition) {
-        let _ = composition.addMutableTrack(withMediaType: .video, preferredTrackID: videoTrackID)
+        let _ = composition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: videoTrackID)
         if item.audio != nil {
-            let _ = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: audioTrackID)
+            let _ = composition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: audioTrackID)
         }
     }
     
     /// Add video to composition
     fileprivate func insert(item: VideoItem, videoCompositionTrack: AVMutableCompositionTrack, timeRange: CMTimeRange) {
-        guard let videoTrack = item.video.tracks(withMediaType: .video).first else { return }
+        guard let videoTrack = item.video.tracks(withMediaType: AVMediaType.video).first else { return }
         
         try? videoCompositionTrack.insertTimeRange(timeRange, of: videoTrack, at: CMTime.zero)
     }
@@ -149,7 +149,7 @@ extension VideoExporter {
         self.exporter = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality)
         if let exporter = self.exporter {
             exporter.outputURL = path
-            exporter.outputFileType = .mov
+            exporter.outputFileType = AVFileType.mov
             exporter.shouldOptimizeForNetworkUse = true
             exporter.timeRange = CMTimeRange(start: CMTime.zero, duration: duration)
             

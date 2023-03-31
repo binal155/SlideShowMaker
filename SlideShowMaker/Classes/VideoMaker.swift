@@ -147,27 +147,29 @@ public class VideoMaker: NSObject {
     }
     
     fileprivate func makeImageFit() {
-        var newImages = [UIImage?]()
-        for image in self.images {
-            if let image = image {
-                
-                let size = CGSize(width: self.size.width * definition, height: self.size.height * definition)
-                
-                let viewSize = self.isMovement && self.movement == .fade
-                    ? CGSize(width: size.width + self.fadeOffset, height: size.height + self.fadeOffset)
-                    : size
-                let view = UIView(frame: CGRect(origin: .zero, size: viewSize))
-                view.backgroundColor = UIColor.black
-                let imageView = UIImageView(image: image)
-                imageView.contentMode = self.contentMode
-                imageView.backgroundColor = UIColor.black
-                imageView.frame = view.bounds
-                view.addSubview(imageView)
-                let newImage = UIImage(view: view)
-                newImages.append(newImage)
+        DispatchQueue.main.async {
+            var newImages = [UIImage?]()
+            for image in self.images {
+                if let image = image {
+                    
+                    let size = CGSize(width: self.size.width * self.definition, height: self.size.height * self.definition)
+                    
+                    let viewSize = self.isMovement && self.movement == .fade
+                        ? CGSize(width: size.width + self.fadeOffset, height: size.height + self.fadeOffset)
+                        : size
+                    let view = UIView(frame: CGRect(origin: .zero, size: viewSize))
+                    view.backgroundColor = UIColor.black
+                    let imageView = UIImageView(image: image)
+                    imageView.contentMode = self.contentMode
+                    imageView.backgroundColor = UIColor.black
+                    imageView.frame = view.bounds
+                    view.addSubview(imageView)
+                    let newImage = UIImage(view: view)
+                    newImages.append(newImage)
+                }
             }
+            self.images = newImages
         }
-        self.images = newImages
     }
     
     fileprivate func combineVideo(completed: CompletedCombineBlock?) {
@@ -201,7 +203,7 @@ public class VideoMaker: NSObject {
         self.calculateTime()
         
         // writer
-        self.videoWriter = try? AVAssetWriter(outputURL: path, fileType: .mov)
+        self.videoWriter = try? AVAssetWriter(outputURL: path, fileType: AVFileType.mov)
         
         guard let videoWriter = self.videoWriter else {
             print("Create video writer failed")
@@ -211,12 +213,12 @@ public class VideoMaker: NSObject {
         
         // input
         let videoSettings = [
-            AVVideoCodecKey: AVVideoCodecH264,
+            AVVideoCodecKey: AVVideoCodecType.h264,
             AVVideoWidthKey: self.size.width,
             AVVideoHeightKey: self.size.height
             ] as [String : Any]
         
-        let writerInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
+        let writerInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
         videoWriter.add(writerInput)
         
         // adapter
@@ -257,7 +259,7 @@ public class VideoMaker: NSObject {
         self.deletePreviousTmpVideo(url: path)
         
         // writer
-        self.videoWriter = try? AVAssetWriter(outputURL: path, fileType: .mov)
+        self.videoWriter = try? AVAssetWriter(outputURL: path, fileType: AVFileType.mov)
         
         guard let videoWriter = self.videoWriter else {
             print("Create video writer failed")
@@ -267,12 +269,12 @@ public class VideoMaker: NSObject {
         
         // input
         let videoSettings = [
-            AVVideoCodecKey: AVVideoCodecH264,
+            AVVideoCodecKey: AVVideoCodecType.h264,
             AVVideoWidthKey: self.size.width,
             AVVideoHeightKey: self.size.height
         ] as [String : Any]
         
-        let writerInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
+        let writerInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
         videoWriter.add(writerInput)
         
         // adapter
